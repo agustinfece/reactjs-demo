@@ -23,3 +23,5 @@ console.log('Hello, World!')
 6) Seleccionar la consola para ver el cambio
 
 Proyecto creado con [Create React App](https://github.com/facebook/create-react-app).
+
+Siguiente paso: feature/backend-integration
