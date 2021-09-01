@@ -21,6 +21,7 @@ const TODO = () => {
       },
       body: JSON.stringify(task)
     })
+    getTasks()
   }
 
   // Solicita actualizar una tarea
@@ -45,9 +46,6 @@ const TODO = () => {
     const formData = new FormData(event.currentTarget);
     const formObject = Object.fromEntries(formData.entries())
     postTask({name: formObject['task-name'], status: 'PENDING'})
-    .then(response => response.json())
-    .then(newTask => setTasks([...tasks, newTask]))
-    getTasks()
   }
 
   // Cambia el formato de la fecha de creacion
