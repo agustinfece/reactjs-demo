@@ -1,27 +1,84 @@
 # Construyendo una app con ReactJS
 
-1) Inicializar el proyecto. Desde una terminal hacer:
+1) Instalar la dependencia para manejar la navegacion:
 
 ```js
-npm init react-app my-app
-cd reactjs-demo
-yarn start
+yarn add react-router-dom
 ```
 
-2) Abrir el archivo src/App.js
+El objetivo es tener dos rutas para componentes distintos:
+- HomePage: componente para desplegar la pantalla de inicio
+- TODO: componente para desplegar la lista de tareas pendientes
 
-3) En el mismo, introducir lo siguiente en la linea 5:
+2) Crear una nueva carpeta src/screens
+
+3) Crear el componente src/screens/HomePage.js como sigue:
 
 ```js
-console.log('Hello, World!')
+import React from 'react';
+import { Link } from 'react-router-dom';
+
+const HomePage = () =>  
+  <div>
+    <Link to="/to-do">Go to TO-DO</Link>
+  </div>
+
+export default HomePage
 ```
 
-4) Dirigirse al navegador donde se abrio la app web
+Se utiliza el componente Link, ofrecido por nuestra nueva dependencia.
+El mismo se encarga de dirigir a otra ruta especificada en la prop "to".
 
-5) Click derecho e inspeccionar
+4) Crear el componente src/screens/TODO.js como sigue:
 
-6) Seleccionar la consola para ver el cambio
+```js
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-Proyecto creado con [Create React App](https://github.com/facebook/create-react-app).
+const TODO = () =>  
+  <div>
+    <Link to="/home">Go to HomePage</Link>
+  </div>
+
+export default TODO
+```
+
+5) Editar el archivo src/App.js de la siguiente manera:
+
+Comenzar importando lo siguiente de nuestra nueva dependencia:
+
+```js
+import { BrowserRouter, Route, Redirect } from 'react-router-dom'
+```
+
+- BrowserRoute se encarga de configurar el enrutado.
+- Route define las rutas y que componente se renderiza en ellas.
+- Redirect se utiliza para redireccionar las demas rutas no especificadas.
+
+Importar los componentes creados hace un instante:
+
+```js
+import HomePage from './screens/HomePage';
+import TODO from './screens/TODO';
+```
+
+Solo hace falta utilizar lo que hemos importado, modificando nuestro componente App:
+
+```js
+function App() {
+  return (
+    <BrowserRouter>
+      <Route path="/home" component={HomePage} exact/>
+      <Route path="/to-do" component={TODO} exact/>
+      <Route path="/" render={() => <Redirect to="/home"/>} />
+    </BrowserRouter>
+  );
+}
+
+export default App;
+```
+
+Hemos conseguido una SPA que cuenta con dos rutas: /home y /to-do, mapeando cada ruta a su componente.
+La ultima ruta hace match con toda ruta ingresada manualmente y redirige a HomePage.
 
 Siguiente paso: feature/backend-integration
