@@ -1,154 +1,153 @@
 # Construyendo una app con ReactJS
 
-1) En este paso, unicamente modificaremos el archivo src/screens/TODO.js
+Este paso es opcional, pero hara que nuestra app luzca mejor esteticamente.
 
-Comenzaremos importando dos hooks de react que van a utilizarese:
+Los estilos se manejan pasando el atributo o la prop `style`.
+En cada caso pasaremos un objeto JS, que contendra el estilo deseado.
 
-```js
-import React, { useState, useEffect } from 'react';
-```
+Crearemos un objeto JS generico `style`, en cuyas claves se encontraran los objetos JS a pasar.
 
-Para poder llevar adelante los proximos pasos, cambiaremos la sintaxis del componente. 
-En lugar de tener esta forma:
+1) Comencemos por estilizar el componente HomePage
 
-```js
-const TODO = () => (
-  ...
-)
-```
-
-Escribiremos algo que es equivalente:
+Definiremos nuestra constante de estilos como sigue:
 
 ```js
-const TODO = () => {
-  return (
-    ...
-  )
+const styles = {
+  container: {
+    padding: 50,
+    backgroundColor: 'skyblue',
+    height: '100vh',
+  },
+  title: {
+    fontSize: 72,
+    fontWeight: '800',
+    marginTop: 50
+  },
+  link: {
+    fontSize: 24
+  }
 }
 ```
 
-2) Utilizaremos el primero de los hooks, `useState`, para manejar un estado donde se guardara la lista de tareas
+Para utilizarla asi:
 
 ```js
-const [tasks, setTasks] = useState([])
+const HomePage = () =>  
+  <div style={styles.container}>
+    <Link to="/to-do" style={styles.link}>Go to TO-DO</Link>
+    <div style={styles.title}>Welcome!</div>
+  </div>
 ```
 
-De ahora en adelante: 
-- `tasks` contendra la lista de tareas.
-- `setTasks` se utilizara para cambiar el valor de la lista.
-- La lista se inicializa vacia.
+2) Lo mismo haremos con el componente TODO
 
-3) Definiremos una funcion que obtiene las tareas de backend
+En este caso, la constante de estilos posee mas datos:
 
 ```js
-const getTasks = async () => { 
-  await fetch('http://localhost:8000/todos')
-  .then(response => response.json())
-  .then(data => setTasks(data))
+const styles = {
+  button: {
+    width: 150,
+    height: 50,
+    borderRadius: 12,
+    fontSize: 24,
+  },
+  container: {
+    padding: 50,
+    height: '100vh',
+  },
+  input: {
+    width: 650,
+    height: 30,
+    marginRight: 10,
+    borderRadius: 12,
+    padding: 10,
+    fontSize: 24,
+    outline: 'none',
+  },
+  itemContainer: {
+    borderRadius: 12,
+    borderWidth: 0.5,
+    border: 'solid',
+    padding: 10,
+    marginTop: 20,
+    fontSize: 24,
+    width: 300,
+    marginRight: 10
+  },
+  itemButton: {
+    width: 140,
+    height: 50,
+    borderRadius: 12,
+    fontSize: 20,
+    marginLeft: 5
+  },
+  link: {
+    fontSize: 24
+  },
+  tasks: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  title: {
+    fontSize: 72,
+    fontWeight: '800',
+    marginTop: 50,
+    marginBottom: 50,
+  },
 }
 ```
 
-Al recibir los datos del backend, actualiza la lista con `setState`.
-
-4) Definiremos una funcion que solicita al backend crear una tarea
+Ademas, utilizaremos una funcion auxiliar para obtener el color de cada tarea, dependiendo de su estado:
 
 ```js
-const postTask = async (task) => {
-  await fetch('http://localhost:8000/todos', {
-    method: 'POST', 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(task)
-  })
-  getTasks()
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'PENDING': 
+      return 'yellow'
+    case 'COMPLETED': 
+      return 'green'
+    case 'CANCELED':
+      return 'red'
+    default:
+      return 'yellow'
+  }
 }
 ```
 
-Recibe una tarea (que sera un objeto JS) y la envia en una request a backend.
-Se hace una llamada a `getTasks`, para obtener la lista actualizada con el nuevo elemento.
+Para aplicar estos estilos, deberemos usarlos en los elementos que estamos renderizando.
 
-5) Definiremos una funcion que solicita al backend actualizar el estado de una tarea
-
-```js
-const putTask = async (taskId, status) => {
-  await fetch(`http://localhost:8000/todos/${taskId}/${status}`, {
-    method: 'PUT', 
-    headers: {
-      'Content-Type': 'application/json'
-    },
-  })
-  getTasks()
-}
-```
-
-Recibe el identificador de la tarea a actualizar y el nuevo estado.
-Se vuelve a llamar a `getTasks`, para obtener la lista con el nuevo elemento actualizado.
-
-6) Utilizaremos el segundo hook, `useEffect`, para solicitar al componente que al montarse se obtenga la lista de tareas
+Por un lado, editemos `renderTasks` para aplicar estilos a cada tarea de la lista:
 
 ```js
-useEffect(() => {
-  getTasks()
-}, [])
-```
-
-7) Utilicemos lo que introduce el usuario. 
-
-Se recibira un evento cuando el usuario presione la tecla enter o presione el boton.
-Manejaremos ese evento como sigue:
-
-```js
-const onSubmitHandler = (event) => {
-  event.preventDefault()
-  const formData = new FormData(event.currentTarget);
-  const formObject = Object.fromEntries(formData.entries())
-  postTask({name: formObject['task-name'], status: 'PENDING'})
-}
-```
-
-De esta manera, ese evento dispara una accion de crear una tarea. 
-Al crearse, es inicializada como una tarea pendiente, tal como se indica en su estado.
-
-8) Solo resta indicar como se mostraran estas tareas:
-
-```js
-const formatDate = (date) => new Date(date).toLocaleString()
-
 const renderTasks = () => tasks.map(item => 
-  <div key={item._id}>
+  <div key={item._id} style={{...styles.itemContainer, backgroundColor: getStatusColor(item.status)}}>
     <p>{item.name}</p>
     <div>
       <p>{formatDate(item.created)}</p>
     </div>
-    <button onClick={() => putTask(item._id, 'cancel')}>Cancel</button>
-    <button onClick={() => putTask(item._id, 'complete')}>Complete</button>
+    <button onClick={() => putTask(item._id, 'cancel')} style={styles.itemButton}>Cancel</button>
+    <button onClick={() => putTask(item._id, 'complete')} style={styles.itemButton}>Complete</button>
   </div>
 )
 ```
 
-La primera funcion se utiliza para formatear la fecha de creacion de la tarea.
-
-La segunda mapea cada tarea a un JSX.
-Para esto, se podria crear un nuevo componente llamado Task y pasar los datos de la tarea mediante props.
-Para mayor simplicidad, este paso queda en manos del lector.
-
-9) Luego de realizadas las modificaciones, el componente TODO retorna lo siguiente:
+Por ultimo, editemos los demas elementos que retorna el componente:
 
 ```js
 return (
-  <div>
-    <Link to="/home">Go to HomePage</Link>
-    <div>Here is your TO-DO list!</div>
+  <div style={styles.container}>
+    <Link to="/home" style={styles.link}>Go to HomePage</Link>
+    <div style={styles.title}>Here is your TO-DO list!</div>
     <form onSubmit={onSubmitHandler}>
-      <input name="task-name" placeholder='Write your task here...'/>
-      <button type="submit">Add Task</button>
+      <input name="task-name" placeholder='Write your task here...' style={styles.input}/>
+      <button type="submit" style={styles.button}>Add Task</button>
     </form>
-    {renderTasks()}
+    <div style={styles.tasks}>
+      {renderTasks()}
+    </div>
   </div>
 )
 ```
 
-Hemos conseguido que el usuario pueda ver tareas, crearlas y actualizarlas.
-
-Siguiente paso: feature/styles
+Felicitaciones, has llegado al final de esta guia. 
+Espero que te haya resultado util :)
