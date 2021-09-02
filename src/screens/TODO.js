@@ -1,6 +1,71 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
+const styles = {
+  button: {
+    width: 150,
+    height: 50,
+    borderRadius: 12,
+    fontSize: 24,
+  },
+  container: {
+    padding: 50,
+    height: '100vh',
+  },
+  input: {
+    width: 650,
+    height: 30,
+    marginRight: 10,
+    borderRadius: 12,
+    padding: 10,
+    fontSize: 24,
+    outline: 'none',
+  },
+  itemContainer: {
+    borderRadius: 12,
+    borderWidth: 0.5,
+    border: 'solid',
+    padding: 10,
+    marginTop: 20,
+    fontSize: 24,
+    width: 300,
+    marginRight: 10
+  },
+  itemButton: {
+    width: 140,
+    height: 50,
+    borderRadius: 12,
+    fontSize: 20,
+    marginLeft: 5
+  },
+  link: {
+    fontSize: 24
+  },
+  tasks: {
+    display: 'flex',
+    flexWrap: 'wrap'
+  },
+  title: {
+    fontSize: 72,
+    fontWeight: '800',
+    marginTop: 50,
+    marginBottom: 50,
+  },
+}
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'PENDING': 
+      return 'yellow'
+    case 'COMPLETED': 
+      return 'green'
+    case 'CANCELED':
+      return 'red'
+    default:
+      return 'yellow'
+  }
+}
+
 const TODO = () => {
   // Estado que representa la lista de tareas
   const [tasks, setTasks] = useState([])
@@ -53,25 +118,27 @@ const TODO = () => {
   
   // Renderiza las tareas
   const renderTasks = () => tasks.map(item => 
-    <div key={item._id}>
+    <div key={item._id} style={{...styles.itemContainer, backgroundColor: getStatusColor(item.status)}}>
       <p>{item.name}</p>
       <div>
         <p>{formatDate(item.created)}</p>
       </div>
-      <button onClick={() => putTask(item._id, 'cancel')}>Cancel</button>
-      <button onClick={() => putTask(item._id, 'complete')}>Complete</button>
+      <button onClick={() => putTask(item._id, 'cancel')} style={styles.itemButton}>Cancel</button>
+      <button onClick={() => putTask(item._id, 'complete')} style={styles.itemButton}>Complete</button>
     </div>
   )
 
   return (
-    <div>
-      <Link to="/home">Go to HomePage</Link>
-      <div>Here is your TO-DO list!</div>
+    <div style={styles.container}>
+      <Link to="/home" style={styles.link}>Go to HomePage</Link>
+      <div style={styles.title}>Here is your TO-DO list!</div>
       <form onSubmit={onSubmitHandler}>
-        <input name="task-name" placeholder='Write your task here...'/>
-        <button type="submit">Add Task</button>
+        <input name="task-name" placeholder='Write your task here...' style={styles.input}/>
+        <button type="submit" style={styles.button}>Add Task</button>
       </form>
-      {renderTasks()}
+      <div style={styles.tasks}>
+        {renderTasks()}
+      </div>
     </div>
   )
 }
