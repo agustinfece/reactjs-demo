@@ -3,7 +3,7 @@
 1) Inicializar el proyecto. Desde una terminal hacer:
 
 ```js
-npm init react-app my-app
+npm init react-app reactjs-demo
 cd reactjs-demo
 yarn start
 ```
