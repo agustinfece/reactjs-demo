@@ -151,3 +151,5 @@ return (
 
 Felicitaciones, has llegado al final de esta guia. 
 Espero que te haya resultado util :)
+
+![Vista final](https://github.com/agustinfece/reactjs-demo/blob/feature/styles/public/view.png?raw=true)
